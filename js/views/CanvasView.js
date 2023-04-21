@@ -27,11 +27,29 @@ export class CanvasView {
 
 	}
 
-	drawPath(startPoint, endPoint, color) {
+	drawStartPath(firstPoint, secondPoint, color) {
 
 		this.context.beginPath();
-		this.context.moveTo(startPoint.x, startPoint.y);
-		this.context.lineTo(endPoint.x, endPoint.y);
+		this.context.moveTo(firstPoint.x, firstPoint.y);
+		this.context.lineTo(secondPoint.x, secondPoint.y);
+		this.context.strokeStyle = color;
+		this.context.stroke();
+	}
+
+	drawAnotherPath(point, color) {
+
+		this.context.lineTo(point.x, point.y);
+		this.context.strokeStyle = color;
+		this.context.stroke();
+	}
+
+	drawLine(line, color) {
+
+		this.context.beginPath();
+		this.context.moveTo(line[0].x, line[0].y);
+		for(var i = 1; i < line.length; i++) {
+			this.context.lineTo(line[i].x, line[i].y);
+		}
 		this.context.strokeStyle = color;
 		this.context.stroke();
 	}

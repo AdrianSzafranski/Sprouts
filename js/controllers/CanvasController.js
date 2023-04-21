@@ -222,9 +222,8 @@ export class CanvasController {
               this.currentline[i + 1]
             );
 
-            this.canvStatPathsView.drawPath(
-              this.currentline[i],
-              this.currentline[i + 1],
+            this.canvStatPathsView.drawLine(
+              this.currentline,
               this.colors[this.currentPlayer]);
           }
 
@@ -327,19 +326,24 @@ export class CanvasController {
                 this.currentline[0].x = xy[0];
                 this.currentline[0].y = xy[1];
   
+                // draw first part of the current line
+                this.canvDrawPathsView.drawStartPath(
+                  this.currentline[this.currentline.length - 1],
+                  this.currentline[this.currentline.length - 2],
+                  "#434354",
+                );
+              } else {
+                // draw another part of the current line
+                this.canvDrawPathsView.drawAnotherPath(
+                  this.currentline[this.currentline.length - 1],
+                  "#434354",
+                );
               }
   
               // save a new part of the current line to the buffer
               this.bufferCurrentPath.addLineObject(
                 this.currentline[this.currentline.length - 1],
                 this.currentline[this.currentline.length - 2]);
-  
-              // draw a new part of the current line
-              this.canvDrawPathsView.drawPath(
-                this.currentline[this.currentline.length - 1],
-                this.currentline[this.currentline.length - 2],
-                "#434354",
-              );
             }
         }
       }
