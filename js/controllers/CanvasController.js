@@ -98,15 +98,10 @@ export class CanvasController {
     var x = event.pageX - this.canvStatDots.offsetLeft;
     var y = event.pageY - this.canvStatDots.offsetTop;
     
-    // clearing the settings, allowing a new line to be drawn
-    this.cameOutOfTheDot = false;
-    this.currentline = [];
-    this.connectingDots = [];
-
     // after drawing the line, the user selects the location of the new dot by clicking the mouse
     // checking if this is the moment
     if (this.isDrawingDot) {
-
+      
       var isLineClick = false;
       var coordinatesCenterLine;
 
@@ -116,6 +111,7 @@ export class CanvasController {
           if (this.bufferCurrentPath.buffer[x + i][y + j] == 1) {
             coordinatesCenterLine = new Location(x + i, y + j);
             isLineClick = true;
+          
             break;
           }
         }
@@ -123,7 +119,7 @@ export class CanvasController {
 
       // if the current line is clicked
       if (isLineClick) {
-
+       
         // create new dot
         const dot = new Dot(
           new Location(coordinatesCenterLine.x, coordinatesCenterLine.y),
@@ -145,6 +141,19 @@ export class CanvasController {
         // clearing the buffer with current line
         this.bufferCurrentPath = new CanvasBuffer(this.width, this.height);
 
+        // drawing the current line in the canvas with drawn lines and 
+        // saving it to the drawn lines buffer
+        for (var i = 0; i < this.currentline.length - 1; i++) {
+            this.bufferDrawnPaths.addLineObject(
+              this.currentline[i],
+              this.currentline[i + 1]
+            );
+
+            this.canvStatPathsView.drawLine(
+              this.currentline,
+              this.colors[this.currentPlayer]);
+        }
+      
         // change of turn to the next player
         if(this.currentPlayer == 0) {
           this.currentPlayer = 1;
@@ -153,9 +162,21 @@ export class CanvasController {
         }
        
         this.isDrawingDot = false;
+
+        // clearing the settings, allowing a new line to be drawn
+        this.cameOutOfTheDot = false;
+        this.currentline = [];
+        this.connectingDots = [];
+
+       
       }
     // if the dot is clicked 
     } else if (this.bufferDrawnDots.buffer[x][y] == 1) {
+      
+      // clearing the settings, allowing a new line to be drawn
+      this.cameOutOfTheDot = false;
+      this.currentline = [];
+      this.connectingDots = [];
       
       // finding which dot was clicked on and checking if it has free connections
       for (var i = 0; i < this.dots.length; i++) {
@@ -176,16 +197,16 @@ export class CanvasController {
 
   onMouseUp(event) {
 
-    // having at least two line points
-    if (this.currentline.length > 1) {
+    // having at least two line points and there is no process to create a new dot
+    if (this.currentline.length > 1  && !this.isDrawingDot) {
 
       // get current cursor coordinates
       var x = event.pageX - this.canvStatDots.offsetLeft;
       var y = event.pageY - this.canvStatDots.offsetTop;
-     
-      // if the dot is clicked
+      
+      // if we release the mouse key on the dot
       if (this.bufferDrawnDots.buffer[x][y] == 1) {
-
+        
         // number of points of the line drawn
         var lineLen = this.currentline.length;
       
@@ -213,19 +234,6 @@ export class CanvasController {
 
           // add the current line to the line list
           this.lines.push(this.currentline);
-
-          // drawing the current line in the canvas with drawn lines and 
-          // saving it to the drawn lines buffer
-          for (var i = 0; i < this.currentline.length - 1; i++) {
-            this.bufferDrawnPaths.addLineObject(
-              this.currentline[i],
-              this.currentline[i + 1]
-            );
-
-            this.canvStatPathsView.drawLine(
-              this.currentline,
-              this.colors[this.currentPlayer]);
-          }
 
           // setting an option informing that the next step is the process of determining a new dot
           this.isDrawingDot = true;
@@ -290,6 +298,12 @@ export class CanvasController {
           this.currentline[lineLen - 1].x = xy[0];
           this.currentline[lineLen - 1].y = xy[1];
 
+          // draw last part of the current line
+          this.canvDrawPathsView.drawAnotherPath(
+            this.currentline[this.currentline.length - 1],
+            "#434354",
+          );
+
         }
         // having at least two line points and
         // checking if the latest drawn line segment collide with another line
@@ -328,8 +342,8 @@ export class CanvasController {
   
                 // draw first part of the current line
                 this.canvDrawPathsView.drawStartPath(
-                  this.currentline[this.currentline.length - 1],
                   this.currentline[this.currentline.length - 2],
+                  this.currentline[this.currentline.length - 1],
                   "#434354",
                 );
               } else {
