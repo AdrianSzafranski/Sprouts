@@ -5,7 +5,7 @@ import { CanvasBuffer } from "../models/CanvasBuffer.js";
 
 export class CanvasController {
 
-  constructor(dots, lines, canvasDrawingPathsView, canvasStaticDotsView, canvasStaticPathsView, canvasBackgroundView) {
+  constructor(dots, lines, canvasSelectedDotsView, canvasDrawingPathsView, canvasStaticDotsView, canvasStaticPathsView, canvasBackgroundView) {
 
     //list of dots displayed
     this.dots = dots.dots;
@@ -13,12 +13,14 @@ export class CanvasController {
     this.lines = lines.lines;
 
     //used view 'CanvasView.js' objects
+    this.canvSelDotsView = canvasSelectedDotsView;
     this.canvDrawPathsView = canvasDrawingPathsView;
     this.canvStatDotsView = canvasStaticDotsView;
     this.canvStatPathsView = canvasStaticPathsView;
     this.canvBackgroundView = canvasBackgroundView;
 
     //display canvas of the 'CanvasView.js' view
+    this.canvSelDots = this.canvSelDotsView.canvas;
     this.canvDrawPaths = this.canvDrawPathsView.canvas;
     this.canvStatDots = this.canvStatDotsView.canvas;
     this.canvStatPaths = this.canvStatPathsView.canvas;
@@ -55,11 +57,12 @@ export class CanvasController {
   init() {
 
     //listening to mouse events, canvStatDots is the topmost canvas
-    this.canvStatDots.addEventListener('mousedown', this.onMouseDown.bind(this));
-    this.canvStatDots.addEventListener('mouseup', this.onMouseUp.bind(this));
-    this.canvStatDots.addEventListener('mousemove', this.onMouseMove.bind(this));
+    this.canvSelDots.addEventListener('mousedown', this.onMouseDown.bind(this));
+    this.canvSelDots.addEventListener('mouseup', this.onMouseUp.bind(this));
+    this.canvSelDots.addEventListener('mousemove', this.onMouseMove.bind(this));
 
     //clearing the canvas
+    this.canvSelDotsView.clear();
     this.canvDrawPathsView.clear();
     this.canvStatDotsView.clear();
     this.canvStatPathsView.clear();
@@ -135,8 +138,9 @@ export class CanvasController {
           dot.color,
           this.dotRadius);
 
-        // clear canvas with current line
+        // clear canvas with current line and selected dots
         this.canvDrawPathsView.clear();
+        this.canvSelDotsView.clear();
 
         // clearing the buffer with current line
         this.bufferCurrentPath = new CanvasBuffer(this.width, this.height);
@@ -186,6 +190,12 @@ export class CanvasController {
           //saving the index of the dot that was clicked on
           this.connectingDots[0] = i;
 
+          //change the color of the selected dot
+          this.canvSelDotsView.drawDot(
+            this.dots[i].location,
+            "#BBFFBB",
+            this.dotRadius);
+
           this.isDrawing = true;
           break;
 
@@ -216,7 +226,13 @@ export class CanvasController {
             
             //saving the index of the dot that was clicked on
             this.connectingDots[1] = i;
-            
+
+            //change the color of the selected dot
+            this.canvSelDotsView.drawDot(
+              this.dots[i].location,
+              "#BBFFBB",
+              this.dotRadius);
+              
             break;
           } 
         }
@@ -239,17 +255,26 @@ export class CanvasController {
           this.isDrawingDot = true;
 
         } else {
-          // clear canvas with current line
+          // clear canvas with current line and selected dots
           this.canvDrawPathsView.clear();
+          this.canvSelDotsView.clear();
         }
 
       } else {
-        // clear canvas with current line
-        this.canvDrawPathsView.clear();
+       // clear canvas with current line and selected dots
+       this.canvDrawPathsView.clear();
+       this.canvSelDotsView.clear();
       }
 
+    } 
     
+    // will happen if you press and release a key in a dot without exiting it
+    // when moving the mouse inside the dot, the length will be 1
+    if (this.currentline.length < 2) {
+       // clear selected dots
+       this.canvSelDotsView.clear();
     }
+
     this.isDrawing = false;
   }
 
@@ -313,8 +338,10 @@ export class CanvasController {
 
             // stop drawing lines
             this.isDrawing = false;
-            // clear canvas with current line
+            // clear canvas with current line and selected dots
             this.canvDrawPathsView.clear();
+            this.canvSelDotsView.clear();
+
             // clearing the buffor with current line
             this.bufferCurrentPath = new CanvasBuffer(this.width, this.height);
             // clearing the list with the points of the current line

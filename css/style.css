@@ -8,24 +8,30 @@ body {
     width: 100%;
     height: 99vh;
 }
+#myCanvasSelectedDots {
+    position: absolute;
+			top: 0;
+			left: 0;
+			z-index: 4;
+}
 #myCanvasStaticDots {
     position: absolute;
 			top: 0;
 			left: 0;
-			z-index: 6;
+			z-index: 3;
 }
 #myCanvasDrawingPaths {
     position: absolute;
 			top: 0;
 			left: 0;
-			z-index: 5;
+			z-index: 2;
 }
 
 #myCanvasStaticPaths {
     position: absolute;
 			top: 0;
 			left: 0;
-			z-index: 4;
+			z-index: 1;
 }
 
 #myCanvasBackground {

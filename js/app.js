@@ -6,6 +6,7 @@ import { Lines } from "./models/Lines.js";
 
 var dots = new Dots();
 var lines = new Lines();
+var canvasSelectedDotsView = new CanvasView(document.getElementById('myCanvasSelectedDots'));
 var canvasDrawingPathsView = new CanvasView(document.getElementById('myCanvasDrawingPaths'));
 var canvasStaticDotsView = new CanvasView(document.getElementById('myCanvasStaticDots'));
 var canvasStaticPathsView = new CanvasView(document.getElementById('myCanvasStaticPaths'));
@@ -14,6 +15,7 @@ var canvasBackgroundView = new CanvasView(document.getElementById('myCanvasBackg
 var controller = new CanvasController(
     dots,
     lines,
+    canvasSelectedDotsView,
     canvasDrawingPathsView,
     canvasStaticDotsView,
     canvasStaticPathsView,
